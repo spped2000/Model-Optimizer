@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>model_quant &mdash; Model Optimizer 0.0.1.dev1+gf30fa5c7b</title>
+  <title>model_quant &mdash; Model Optimizer 0.0.1.dev1+g78a15477a</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -208,7 +208,7 @@
 <td><p>Quantizes and calibrates the model in-place.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#modelopt.torch.quantization.model_quant.temporarily_fold_weights" title="modelopt.torch.quantization.model_quant.temporarily_fold_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">temporarily_fold_weights</span></code></a></p></td>
-<td><p>Temporarily fold enabled fake-quant weights for a frozen inference region.</p></td>
+<td><p>Temporarily fold fake-quant weights for a frozen inference region.</p></td>
 </tr>
 </tbody>
 </table>
@@ -685,13 +685,12 @@ Please subsample the dataset or reduce the number of batches if needed.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="modelopt.torch.quantization.model_quant.temporarily_fold_weights">
 <span class="sig-name descname"><span class="pre">temporarily_fold_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.quantization.model_quant.temporarily_fold_weights" title="Link to this definition"></a></dt>
-<dd><p>Temporarily fold enabled fake-quant weights for a frozen inference region.</p>
+<dd><p>Temporarily fold fake-quant weights for a frozen inference region.</p>
 <p>Each <code class="xref py py-class docutils literal notranslate"><span class="pre">QuantModule</span></code> performs its normal module-specific <code class="docutils literal notranslate"><span class="pre">fold_weight</span></code> operation. The
 original weights and quantizer runtime state are restored on exit, including after an
 exception. Parameters are restored in place so optimizer and distributed references remain
-valid. Disabled and non-fake weight quantizers are left untouched. Parameters whose storage is
-tied across owners are also left unfolded because mutating them could change a disabled owner.
-Weight <code class="docutils literal notranslate"><span class="pre">SequentialQuantizer</span></code> containers are not currently folded.</p>
+valid. Weight <code class="docutils literal notranslate"><span class="pre">SequentialQuantizer</span></code> containers, quantizers shared across separate folding
+calls, and parameters sharing storage across modules are not currently supported.</p>
 <p>This context is intended for repeated no-gradient forwards with no optimizer step, such as
 log-probability recomputation over several microbatches. It retains calibration attributes
 while folded; a retained weight <code class="docutils literal notranslate"><span class="pre">pre_quant_scale</span></code> is inactive inside the context because its
